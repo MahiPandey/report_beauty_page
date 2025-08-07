@@ -13,22 +13,37 @@ export default function KeyDataSection() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleDownload = (e) => {
-        e.preventDefault();
-        const { firstName, lastName, email } = formData;
+    const handleDownload = async (e) => {
+    e.preventDefault();
+    const { firstName, lastName, email } = formData;
 
-        if (!firstName || !lastName || !email) {
-            alert('Please fill in all fields.');
-            return;
-        }
+    if (!firstName || !lastName || !email) {
+        alert('Please fill in all fields.');
+        return;
+    }
 
+    try {
+        await fetch('https://script.google.com/macros/s/AKfycbxRH0xEXnT48oFN_r5Y1H_dnoUT43Hl6Otk1dFLb60nC6juHln9_PfOX3Pr1WVGxJeC/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ firstName, lastName, email }),
+        });
+
+        // Trigger the download
         const link = document.createElement('a');
         link.href = 'https://drive.google.com/file/d/1SWQbXI7qtzgFSvu0XM4cd_UN14WHKnoA/view?usp=sharing';
         link.setAttribute('download', 'KBeauty_Report.pdf');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    };
+    } catch (error) {
+        console.error('Error sending to Google Sheets:', error);
+        alert('There was an error. Please try again.');
+    }
+};
 
 
     return (
